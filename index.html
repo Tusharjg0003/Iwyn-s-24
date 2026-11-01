@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Air mail for Iwyn</title>
+<meta name="description" content="A parcel from Malaysia to Riyadh.">
+<meta name="theme-color" content="#10243e">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Gochi+Hand&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --night: #10243e;
+    --night-deep: #0a1829;
+    --paper: #f4ead5;
+    --kraft: #c49a6c;
+    --kraft-dark: #8f6a42;
+    --amber: #ffb703;
+    --mail-red: #d6322e;
+    --mail-blue: #2456a6;
+    --type: 'Courier Prime', 'Courier New', monospace;
+    --hand: 'Gochi Hand', 'Marker Felt', cursive;
+    --panel: 124px;
+    --bar: 56px;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; background: var(--night); color: var(--paper); }
+  body { font-family: var(--type); overflow-x: hidden; }
+  body.locked { overflow: hidden; height: 100dvh; }
+  button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+  :focus-visible { outline: 3px solid var(--amber); outline-offset: 3px; }
+
+  /* Parcel */
+  #arrivals {
+    position: fixed; inset: 0; z-index: 30; background: var(--night);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 28px; padding: 24px 16px;
+  }
+  #parcel { position: relative; width: min(82vw, 340px); aspect-ratio: 1 / .86; display: block; }
+  .box {
+    position: absolute; inset: 0; border-radius: 4px; overflow: hidden;
+    background: repeating-linear-gradient(92deg, #0000 0 7px, #0000000d 7px 8px), var(--kraft);
+    box-shadow: 0 18px 0 -6px var(--kraft-dark), 0 28px 40px #0007;
+  }
+  .twine-v, .twine-h { position: absolute; background: #f0dfc0; box-shadow: 0 0 0 1px #0002; }
+  .twine-v { top: 0; bottom: 0; left: 72%; width: 6px; }
+  .twine-h { left: 0; right: 0; top: 24%; height: 6px; }
+  .label {
+    position: absolute; left: 7%; top: 34%; width: 58%; padding: 10px 11px; color: var(--night);
+    background: var(--paper); transform: rotate(-2deg); text-align: left; font-size: 15px; line-height: 1.3;
+    border: 4px solid; border-image: repeating-linear-gradient(135deg, var(--mail-red) 0 9px, var(--paper) 9px 16px, var(--mail-blue) 16px 25px, var(--paper) 25px 32px) 4;
+  }
+  .label b { display: block; font-size: 19px; }
+  .stamp {
+    position: absolute; right: 6%; top: 40%; width: 19%; aspect-ratio: 3 / 4; background: var(--paper);
+    color: var(--mail-red); display: flex; align-items: center; justify-content: center;
+    font-family: var(--hand); font-size: 26px; transform: rotate(5deg);
+    border: 3px dotted var(--kraft);
+  }
+  .tag { position: absolute; left: 7%; top: 6%; color: var(--night); font-weight: 700; font-size: 17px; }
+  #parcel.ready { animation: nudge 2.6s ease-in-out infinite; }
+  #parcel.shake { animation: shake .5s linear; }
+  @keyframes nudge { 0%, 78%, 100% { transform: none; } 84% { transform: rotate(-2.5deg); } 90% { transform: rotate(2.5deg); } 96% { transform: rotate(-1deg); } }
+  @keyframes shake { 0%,100% { transform: scale(1); } 20% { transform: rotate(-5deg) scale(1.04); } 40% { transform: rotate(5deg) scale(1.07); } 60% { transform: rotate(-6deg) scale(1.1); } 80% { transform: rotate(6deg) scale(1.14); } }
+  .sign { font-family: var(--hand); font-size: 28px; color: var(--amber); text-align: center; }
+
+  /* Route bar */
+  #bar {
+    position: fixed; z-index: 10; top: 0; left: 0; right: 0; height: var(--bar);
+    display: flex; align-items: center; gap: 10px; padding: 0 16px;
+    background: var(--night-deep); color: var(--amber); font-weight: 700; font-size: 15px;
+  }
+  #sky { position: relative; flex: 1; height: 2px; background: repeating-linear-gradient(90deg, var(--amber) 0 6px, #0000 6px 12px); }
+  #plane { position: absolute; left: 0; top: 50%; transform: translate(-50%, -50%); font-size: 20px; color: var(--paper); line-height: 1; }
+  #mute { font-size: 13px; color: var(--paper); text-decoration: underline; padding: 8px 0 8px 4px; font-weight: 400; min-width: 54px; text-align: right; }
+
+  /* Postcards */
+  #trail { position: relative; max-width: 520px; margin: 0 auto; padding: calc(var(--bar) + 28px) 16px calc(var(--panel) + 96px); }
+  #route { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  #route path { fill: none; stroke: var(--amber); stroke-width: 2.5; stroke-dasharray: 3 11; stroke-linecap: round; }
+  .postcard {
+    position: relative; display: block; width: min(74vw, 340px); margin: 0 0 52px; padding: 9px 9px 0;
+    background: var(--paper); color: var(--night); text-align: left; box-shadow: 0 10px 24px #0006;
+  }
+  .postcard:nth-of-type(even) { margin-left: auto; }
+  .postcard img { display: block; width: 100%; height: auto; background: #d8cbb0; }
+  .postcard .place { display: block; font-family: var(--hand); font-size: 24px; padding: 5px 2px 7px; }
+  .postmark {
+    position: absolute; top: 18px; right: 18px; width: 58px; height: 58px; border-radius: 50%;
+    border: 2px solid var(--mail-red); color: var(--mail-red); background: #f4ead5cc;
+    display: flex; align-items: center; justify-content: center; text-align: center;
+    font-size: 11px; font-weight: 700; line-height: 1.05; transform: rotate(-12deg);
+  }
+  .postcard.here { outline: 3px solid var(--amber); outline-offset: 3px; }
+  #land { position: relative; text-align: center; font-family: var(--hand); font-size: 30px; color: var(--amber); }
+
+  /* Announcements */
+  #announce {
+    position: fixed; z-index: 12; left: 0; right: 0; bottom: 0; min-height: var(--panel);
+    padding: 14px 16px calc(16px + env(safe-area-inset-bottom));
+    background: var(--night-deep); border-top: 5px solid; border-image: repeating-linear-gradient(135deg, var(--mail-red) 0 14px, var(--paper) 14px 24px, var(--mail-blue) 24px 38px, var(--paper) 38px 48px) 5;
+    color: var(--amber); font-size: 17px; line-height: 1.4;
+    transition: transform .4s ease; transform: translateY(110%);
+  }
+  #announce.on { transform: none; }
+  #announce p { margin: 0 auto; max-width: 520px; }
+  #quiet {
+    position: fixed; z-index: 14; inset: 0; display: flex; align-items: center; justify-content: center;
+    padding: 24px; text-align: center; background: #0a1829b8; opacity: 0; pointer-events: none; transition: opacity .9s ease;
+  }
+  #quiet.on { opacity: 1; }
+  #quiet p { margin: 0; max-width: 18em; font-family: var(--hand); font-size: clamp(32px, 9.5vw, 46px); line-height: 1.2; color: var(--paper); text-shadow: 0 2px 10px #0a1829, 0 0 3px #0a1829; }
+
+  /* Full size photo */
+  #full { position: fixed; z-index: 40; inset: 0; background: #0a1829f7; display: none; align-items: center; justify-content: center; padding: 16px; }
+  #full.on { display: flex; }
+  #full img { max-width: 100%; max-height: 100%; border: 8px solid var(--paper); }
+
+  /* Arrival */
+  #arrived {
+    position: fixed; z-index: 20; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center;
+    gap: 14px; padding: 24px 16px; text-align: center; background: #10243ef2;
+  }
+  #arrived.on { display: flex; }
+  #arrived .gate { color: var(--amber); font-size: 20px; font-weight: 700; margin: 0; }
+  #arrived .line { font-family: var(--hand); font-size: clamp(36px, 11vw, 54px); line-height: 1.12; margin: 0; }
+  #arrived .from { font-size: 17px; margin: 8px 0 18px; }
+  #arrived button { padding: 13px 18px; border: 2px solid var(--amber); color: var(--amber); font-weight: 700; font-size: 16px; min-width: 220px; }
+  #confetti { position: fixed; inset: 0; z-index: 35; pointer-events: none; width: 100%; height: 100%; }
+
+  .hidden { visibility: hidden; }
+</style>
+</head>
+<body class="locked">
+
+<section id="arrivals">
+  <button id="parcel" class="ready" aria-label="Open the parcel">
+    <span class="box">
+      <span class="twine-v"></span><span class="twine-h"></span>
+      <span class="tag">Air mail KUL to RUH</span>
+      <span class="label"><b>To: Iwyn (24)</b>Riyadh<br>From: the boys, Malaysia</span>
+      <span class="stamp">24</span>
+    </span>
+  </button>
+  <div class="sign">Tap to sign for your parcel</div>
+</section>
+
+<div id="bar" class="hidden">
+  <span>KUL</span>
+  <div id="sky"><span id="plane" aria-hidden="true">✈&#xFE0E;</span></div>
+  <span>RUH</span>
+  <button id="mute">Mute</button>
+</div>
+
+<main id="trail" class="hidden">
+  <svg id="route" aria-hidden="true"><path/></svg>
+  <div id="cards"></div>
+  <div id="land">Riyadh 📍</div>
+</main>
+
+<div id="announce" aria-live="polite"><p></p></div>
+<div id="quiet" aria-live="polite"><p></p></div>
+
+<section id="arrived">
+  <p class="gate">Arrived in Riyadh.</p>
+  <p class="line">Distance never changes us. Happy 24th, Iwyn. We love you.</p>
+  <p class="from">From Tushar, Hammad and the boys</p>
+  <button id="browse">Look through the photos</button>
+  <button id="again">Play it again</button>
+</section>
+
+<div id="full" role="dialog" aria-label="Full size photo"><img alt=""></div>
+<canvas id="confetti"></canvas>
+<audio id="song" src="assets/birthday.mp3" preload="auto"></audio>
+
+<script>
+const STOPS = [
+  { img: 'monash', w: 810, h: 1080, place: 'Where it all started', mark: 'MONASH', alt: 'Two friends in Monash Cup jerseys',
+    say: 'Flight 24 now departing the Monash canteen. Balloons and questionable TikToks are permitted on board.' },
+  { img: 'kurta', w: 810, h: 1080, place: 'Dressed like adults, once', mark: 'FORMAL', alt: 'Two friends in kurtas and white mundus at a night function',
+    say: 'Passenger Iwyn is now 24. The airline regrets that maturity was not loaded onto this flight.' },
+  { img: 'brothers', w: 607, h: 1080, place: 'Brothers from another mother', mark: 'MIRROR 1', alt: 'Three friends in a mirror selfie, thumbs up',
+    say: 'Security notice: four bathroom mirror selfies detected. Passengers will be asked to explain themselves.' },
+  { img: 'pink', w: 810, h: 1080, place: 'Exhibit B', mark: 'MIRROR 2', alt: 'Two friends in sunglasses in a mirror selfie against pink doors' },
+  { img: 'singapore-three', w: 607, h: 1080, place: 'Singapore', mark: 'SG', alt: 'Three friends with thumbs up in front of Marina Bay Sands',
+    say: 'Now passing Singapore. Reminder: the thumbs up remains this group\'s only known pose.' },
+  { img: 'singapore-two', w: 607, h: 1080, place: 'Singapore, take two', mark: 'SG', alt: 'Two friends smiling at each other at Marina Bay',
+    say: 'Time difference: 5 hours. Difference in us: none.', quiet: true },
+  { img: 'boat', w: 810, h: 1080, place: 'Out at sea', mark: 'AHOY', alt: 'Two friends in life jackets and sunglasses on a boat',
+    say: 'In the event of a water landing, life jackets are under your seat. Sunglasses stay on, apparently.' },
+  { img: 'beach', w: 810, h: 1080, place: 'Back on the rocks', mark: 'SHORE', alt: 'Two friends with arms around each other on rocks by the sea',
+    say: 'Some of us saw you a month ago, some of us much longer. All of us miss you.', quiet: true },
+  { img: 'petronas', w: 810, h: 1080, place: 'Kuala Lumpur', mark: 'KL', alt: 'Two friends taking a selfie under the Petronas Towers',
+    say: 'Now passing KL. Your friends are still here, still complaining that you left.' },
+  { img: 'cliffs', w: 810, h: 1080, place: 'Matching shirts, zero shame', mark: 'CLIFFS', alt: 'Three friends in matching shirts in front of limestone cliffs',
+    say: '7,000 km is just a long walk to the same table.', quiet: true },
+  { img: 'lift', w: 810, h: 1080, place: 'Exhibit C', mark: 'MIRROR 3', alt: 'Two friends posing, one with two thumbs up, beside a mirror',
+    say: 'Lost and found: one Iwyn-shaped gap at the table. Owner, please collect.' },
+  { img: 'bathroom', w: 810, h: 1080, place: 'Exhibit D, we rest our case', mark: 'MIRROR 4', alt: 'Three friends in a bathroom mirror selfie',
+    say: 'Baggage notice: one friendship checked through to Riyadh. It cannot be returned.' },
+  { img: 'airport', w: 810, h: 1080, place: 'Departures', mark: 'KLIA', alt: 'Three friends with coffee and luggage outside the airport',
+    say: 'Final call at KLIA. You boarded the plane. You never left the group.', quiet: true }
+];
+
+const $ = s => document.querySelector(s);
+const song = $('#song'), trail = $('#trail'), cards = $('#cards');
+const announce = $('#announce'), quiet = $('#quiet'), arrived = $('#arrived');
+const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const LEAD = 3.2, SONG_LENGTH = 68.8;
+
+let started = false, finished = false, current = -1;
+let clockStart = 0, useClock = false, handsOffUntil = 0;
+
+/* Build the postcards */
+STOPS.forEach(s => {
+  const b = document.createElement('button');
+  b.className = 'postcard';
+  b.setAttribute('aria-label', 'See full size: ' + s.alt);
+  b.innerHTML = `<img src="assets/photos/${s.img}.jpg" width="${s.w}" height="${s.h}" alt="${s.alt}">
+    <span class="postmark">${s.mark}</span><span class="place">${s.place}</span>`;
+  b.onclick = () => openFull(b.querySelector('img'));
+  cards.append(b);
+});
+const postcards = [...cards.children];
+
+function drawRoute() {
+  const svg = $('#route'), box = trail.getBoundingClientRect();
+  const points = postcards.map(c => {
+    const r = c.getBoundingClientRect();
+    return [r.left - box.left + r.width / 2, r.top - box.top + r.height / 2];
+  });
+  const l = $('#land').getBoundingClientRect();
+  points.push([l.left - box.left + l.width / 2, l.top - box.top]);
+  let d = `M${points[0][0]} ${points[0][1]}`;
+  for (let i = 1; i < points.length; i++) {
+    const [ax, ay] = points[i - 1], [bx, by] = points[i], bend = (by - ay) / 2;
+    d += ` C${ax} ${ay + bend} ${bx} ${by - bend} ${bx} ${by}`;
+  }
+  svg.setAttribute('viewBox', `0 0 ${box.width} ${box.height}`);
+  svg.querySelector('path').setAttribute('d', d);
+}
+addEventListener('resize', drawRoute);
+
+/* Confetti in air mail colours */
+function confetti(count) {
+  if (calm) return;
+  const canvas = $('#confetti'), ctx = canvas.getContext('2d');
+  const W = canvas.width = innerWidth, H = canvas.height = innerHeight;
+  const colours = ['#d6322e', '#2456a6', '#f4ead5', '#ffb703'];
+  const bits = Array.from({ length: count }, () => {
+    const a = Math.random() * Math.PI * 2, v = 5 + Math.random() * 13;
+    return { x: W / 2, y: H / 2, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 3, s: 5 + Math.random() * 7,
+      r: Math.random() * 6, vr: Math.random() - .5, c: colours[Math.random() * 4 | 0] };
+  });
+  const end = performance.now() + 3200;
+  (function step(now) {
+    ctx.clearRect(0, 0, W, H);
+    if (now > end) return;
+    bits.forEach(b => {
+      b.vy += .22; b.vx *= .985; b.x += b.vx; b.y += b.vy; b.r += b.vr;
+      ctx.save(); ctx.translate(b.x, b.y); ctx.rotate(b.r); ctx.fillStyle = b.c;
+      ctx.fillRect(-b.s / 2, -b.s / 3, b.s, b.s * .66); ctx.restore();
+    });
+    requestAnimationFrame(step);
+  })(performance.now());
+}
+
+/* The photos burst from the parcel, scatter, then settle on the route */
+function burst() {
+  const cx = innerWidth / 2, cy = innerHeight / 2;
+  const ring = Math.min(innerWidth, innerHeight) * .36;
+  postcards.forEach((card, i) => {
+    const r = card.getBoundingClientRect();
+    const dx = cx - (r.left + r.width / 2), dy = cy - (r.top + r.height / 2);
+    const a = (i / postcards.length) * Math.PI * 2 + Math.random() * .4;
+    const spin = (Math.random() - .5) * 50;
+    card.style.zIndex = 5;
+    const anim = card.animate([
+      { transform: `translate(${dx}px, ${dy}px) scale(.12) rotate(${spin * 3}deg)`, opacity: 0 },
+      { transform: `translate(${dx + Math.cos(a) * ring}px, ${dy + Math.sin(a) * ring * 1.35}px) scale(.55) rotate(${spin}deg)`, opacity: 1, offset: .42 },
+      { transform: `translate(${dx + Math.cos(a) * ring}px, ${dy + Math.sin(a) * ring * 1.35}px) scale(.55) rotate(${spin}deg)`, opacity: 1, offset: .62 },
+      { transform: 'none', opacity: 1 }
+    ], { duration: 2300, delay: i * 35, easing: 'cubic-bezier(.2,.7,.2,1)', fill: 'backwards' });
+    anim.onfinish = () => { card.style.zIndex = ''; };
+  });
+}
+
+function open() {
+  if (started) return;
+  started = true;
+  handsOffUntil = 0;
+  const parcel = $('#parcel');
+  parcel.className = 'shake';
+  song.currentTime = 0;
+  song.play().catch(() => { useClock = true; });
+  clockStart = performance.now();
+  setTimeout(() => {
+    if (!useClock && song.currentTime === 0) useClock = true;
+  }, 4000);
+  setTimeout(() => {
+    $('#arrivals').style.display = 'none';
+    document.body.classList.remove('locked');
+    trail.classList.remove('hidden');
+    $('#bar').classList.remove('hidden');
+    scrollTo(0, 0);
+    drawRoute();
+    confetti(160);
+    if (!calm) burst();
+    tick();
+  }, calm ? 0 : 480);
+}
+$('#parcel').onclick = open;
+
+function elapsed() {
+  return useClock ? (performance.now() - clockStart) / 1000 : song.currentTime;
+}
+function length() {
+  return isFinite(song.duration) && song.duration > 0 ? song.duration : SONG_LENGTH;
+}
+
+function goTo(i) {
+  current = i;
+  const stop = STOPS[i];
+  postcards.forEach((c, n) => c.classList.toggle('here', n === i));
+  if (performance.now() > handsOffUntil) {
+    const r = postcards[i].getBoundingClientRect();
+    const barH = 56, panelH = announce.offsetHeight;
+    const room = innerHeight - barH - panelH;
+    const top = scrollY + r.top - barH - Math.max(8, (room - r.height) / 2);
+    scrollTo({ top, behavior: calm ? 'auto' : 'smooth' });
+  }
+  const line = announce.querySelector('p');
+  if (stop.quiet) {
+    announce.classList.remove('on');
+    quiet.querySelector('p').textContent = stop.say;
+    quiet.classList.add('on');
+  } else {
+    quiet.classList.remove('on');
+    if (stop.say) {
+      line.textContent = '📢 ' + stop.say;
+      announce.classList.add('on');
+    }
+  }
+}
+
+function land() {
+  finished = true;
+  quiet.classList.remove('on');
+  announce.classList.remove('on');
+  $('#plane').style.left = '100%';
+  arrived.classList.add('on');
+  confetti(200);
+}
+
+function tick() {
+  if (finished) return;
+  const t = elapsed(), total = length();
+  $('#plane').style.left = Math.min(100, t / total * 100) + '%';
+  if (t >= total - .15) return land();
+  const slot = (total - LEAD) / STOPS.length;
+  const i = Math.min(STOPS.length - 1, Math.floor((t - LEAD) / slot));
+  if (i >= 0 && i !== current) goTo(i);
+  setTimeout(tick, 200);
+}
+song.addEventListener('ended', () => { if (!finished) land(); });
+
+/* If he scrolls himself, leave him alone for a while */
+['touchstart', 'wheel'].forEach(e => addEventListener(e, () => {
+  handsOffUntil = performance.now() + 7000;
+}, { passive: true }));
+
+function openFull(img) {
+  const f = $('#full');
+  f.querySelector('img').src = img.src;
+  f.querySelector('img').alt = img.alt;
+  f.classList.add('on');
+  handsOffUntil = performance.now() + 7000;
+}
+$('#full').onclick = () => $('#full').classList.remove('on');
+addEventListener('keydown', e => { if (e.key === 'Escape') $('#full').classList.remove('on'); });
+
+$('#mute').onclick = () => {
+  song.muted = !song.muted;
+  $('#mute').textContent = song.muted ? 'Unmute' : 'Mute';
+};
+$('#browse').onclick = () => arrived.classList.remove('on');
+$('#again').onclick = () => {
+  arrived.classList.remove('on');
+  postcards.forEach(c => c.classList.remove('here'));
+  finished = false; current = -1; handsOffUntil = 0;
+  scrollTo({ top: 0, behavior: calm ? 'auto' : 'smooth' });
+  song.currentTime = 0;
+  song.play().catch(() => { useClock = true; });
+  clockStart = performance.now();
+  tick();
+};
+</script>
+</body>
+</html>
